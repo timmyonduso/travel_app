@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/text_transaction_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Transaction ID: "
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_transaction_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name: " />
+
+    <TextView
+        android:id="@+id/text_transaction_route"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Route: " />
+
+    <TextView
+        android:id="@+id/text_transaction_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Time: " />
+
+    <TextView
+        android:id="@+id/text_transaction_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Type: " />
+
+    <TextView
+        android:id="@+id/text_transaction_luggage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Luggage: " />
+
+</LinearLayout>

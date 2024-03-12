@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Travel_App</string>
+    <string name="splashscreen">splashscreen</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cash_fragment">Cash Collection</string>
+    <string name="transactions">Transactions</string>
+    <string name="user_name">User Name</string>
+    <string name="image">Image</string>
+    <string name="search">Search</string>
+</resources>
