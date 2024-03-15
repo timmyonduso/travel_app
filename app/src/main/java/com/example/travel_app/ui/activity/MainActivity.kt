@@ -1,6 +1,13 @@
 package com.example.travel_app.ui.activity
 
+import android.app.SearchManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -64,6 +71,9 @@ class MainActivity : AppCompatActivity() {
         })
 
     }
+
+
+
 }
 
 //        AuthUI.getInstance()

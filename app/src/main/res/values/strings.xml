@@ -8,4 +8,6 @@
     <string name="user_name">User Name</string>
     <string name="image">Image</string>
     <string name="search">Search</string>
+    <string name="enter_fare_amount">Enter Fare Amount</string>
+    <string name="amount_tendered">Amount Tendered</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.example.travel_app.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -10,53 +12,31 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.travel_app.R
 import com.example.travel_app.databinding.FragmentTransactionsBinding
+import com.example.travel_app.model.CashCollection
 import com.example.travel_app.model.TransactionsData
+import com.example.travel_app.ui.activity.UpdateActivity
 import com.example.travel_app.ui.adapters.SearchViewAdapter
+import com.example.travel_app.ui.adapters.TransactionsAdapter
+import com.example.travel_app.utils.Utils
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import java.io.Serializable
+//import com.example.travel_app.ui.adapters.SearchViewAdapter
 import java.util.Locale
 
 
 class TransactionsFragment : Fragment() {
-    private var mList = ArrayList<TransactionsData>()
-    private lateinit var adapter: SearchViewAdapter
+
     private var _binding: FragmentTransactionsBinding? = null
     private val binding get() = _binding!!
 
-//    private fun filterList(query: String?){
-//
-//        if (query != null){
-//            val filteredList = ArrayList<TransactionsData>()
-//            for (i in mList){
-//                if (i.title.lowercase(Locale.ROOT).contains(query)){
-//                    filteredList.add(i)
-//                }
-//            }
-//
-//            if (filteredList.isEmpty()){
-//                Toast.makeText(
-//                    requireContext(),
-//                    "Sorry there was an error. Please try again",
-//                    Toast.LENGTH_LONG
-//                ).show()
-//            } else{
-//                adapter.setFilteredList(filteredList)
-//            }
-//        }
-//    }
+    private lateinit var transactionsAdapter: TransactionsAdapter
 
-    private fun addDataToList() {
-        mList.add(TransactionsData("Timmy", R.drawable.bus))
-        mList.add(TransactionsData("Teddy", R.drawable.bus))
-        mList.add(TransactionsData("Tonny", R.drawable.bus))
-        mList.add(TransactionsData("Bev", R.drawable.bus))
-        mList.add(TransactionsData("Nicky", R.drawable.bus))
-        mList.add(TransactionsData("Jim", R.drawable.bus))
-        mList.add(TransactionsData("Joe", R.drawable.bus))
-        mList.add(TransactionsData("Jennie", R.drawable.bus))
-        mList.add(TransactionsData("Julie", R.drawable.bus))
-
-    }
+    private lateinit var transactionsList: MutableList<CashCollection> // Declare outside the function
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,35 +44,49 @@ class TransactionsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentTransactionsBinding.inflate(inflater, container, false)
-//
-//        binding.recyclerView.setHasFixedSize(true)
-//        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//
-//        addDataToList()
-//
-//        adapter = SearchViewAdapter(mList)
-//        binding.recyclerView.adapter = adapter
-//
-//        binding.searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                return false
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                filterList(newText)
-//                return true
-//            }
-//
-//        })
+
+        // Inflate the layout for this fragment
+        transactionsList = mutableListOf() // Initialize here
+
+        fetchTransactionsFromFirebase() // Call data fetching first
+
+        transactionsAdapter = TransactionsAdapter(transactionsList) { transaction ->
+            val intent = Intent(context, UpdateActivity::class.java)
+            intent.putExtra("transactionId", transaction.transactionKey)
+            intent.putExtra("transactionFare", transaction.fare)
+            intent.putExtra("transactionName", transaction.userId)
+            intent.putExtra("transactionRoute", "${transaction.fromLocation} - ${transaction.toLocation}")
+            startActivity(intent)
+        }
+
+        binding.transactionsRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.transactionsRecyclerView.adapter = transactionsAdapter
+
+
 
         val view = binding.root
         return view
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.options_menu, menu)
+    private fun fetchTransactionsFromFirebase() {
+        Utils.initializeFirebase()
+        val transactionsRef = Utils.database.getReference("transactions")
 
-        return true
+        transactionsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                transactionsList.clear() // Clear existing data (if any)
+                for (childSnapshot in snapshot.children) {
+                    val transaction = childSnapshot.getValue(CashCollection::class.java)
+                    transactionsList.add(transaction!!) // Ensure non-null
+                }
+                transactionsAdapter.notifyDataSetChanged() // Update adapter
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error fetching transactions
+                Log.w("TransactionsFragment", "Error fetching transactions: ${error.message}")
+            }
+        })
     }
 
     override fun onDestroyView() {
